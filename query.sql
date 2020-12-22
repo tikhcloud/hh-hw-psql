@@ -28,15 +28,15 @@ FROM (SELECT
 
 -- Task 5
 SELECT name, num_of_responces
-FROM (SELECT employer_name AS name, COUNT(*) AS num_of_responces
+FROM (SELECT employer_name AS name, COUNT(response_id) AS num_of_responces
       FROM employer AS e
-               INNER JOIN vacancy AS v
-                          ON e.employer_id = v.employer_id
-               INNER JOIN response AS r
-                          ON v.vacancy_id = r.vacancy_id
-      GROUP BY employer_name) AS nnor
+               LEFT JOIN vacancy AS v
+                         ON e.employer_id = v.employer_id
+               LEFT JOIN response AS r
+                         ON v.vacancy_id = r.vacancy_id
+      GROUP BY e.employer_id) AS nnor
 ORDER BY num_of_responces DESC, name
-LIMIT 5 ;
+LIMIT 5;
 
 --Task 6
 SELECT percentile_cont(0.50) WITHIN GROUP ( ORDER BY n) AS median
@@ -46,9 +46,11 @@ FROM (SELECT COUNT(*) AS n
       GROUP BY employer_name) AS evn ;
 
 --Task 7
-SELECT area_name, min(r.created_on - v.created_on), max(r.created_on - v.created_on)
-FROM area AS a
-         LEFT JOIN employer e on a.area_id = e.area_id
-         LEFT JOIN vacancy v on e.employer_id = v.employer_id
-         LEFT JOIN response r on v.vacancy_id = r.vacancy_id
+SELECT area_name, min(response_time) AS min, max(response_time) AS max
+FROM (SELECT r.vacancy_id, min(r.created_on - v.created_on) AS response_time
+      FROM response AS r
+               INNER JOIN vacancy AS v ON v.vacancy_id = r.vacancy_id
+      GROUP BY r.vacancy_id) AS virt
+         INNER JOIN employer AS e ON e.employer_id = vacancy_id
+         INNER JOIN area AS a ON e.area_id = a.area_id
 GROUP BY area_name;
