@@ -5,7 +5,7 @@ FROM vacancy AS v
                     ON e.employer_id = v.employer_id
          INNER JOIN area AS a
                     ON e.area_id = a.area_id
-WHERE v.compensation_gross IS NULL
+WHERE v.compensation_from IS NULL AND v.compensation_to IS NULL
 ORDER BY v.created_on DESC
 LIMIT 10;
 
