@@ -43,7 +43,7 @@ SELECT percentile_cont(0.50) WITHIN GROUP ( ORDER BY n) AS median
 FROM (SELECT COUNT(*) AS n
       FROM employer
                LEFT JOIN vacancy v ON employer.employer_id = v.employer_id
-      GROUP BY employer_name) AS evn ;
+      GROUP BY employer.employer_id) AS evn ;
 
 --Task 7
 SELECT area_name, min(response_time) AS min, max(response_time) AS max
@@ -53,4 +53,4 @@ FROM (SELECT r.vacancy_id, min(r.created_on - v.created_on) AS response_time
       GROUP BY r.vacancy_id) AS virt
          INNER JOIN employer AS e ON e.employer_id = vacancy_id
          INNER JOIN area AS a ON e.area_id = a.area_id
-GROUP BY area_name;
+GROUP BY a.area_id;
